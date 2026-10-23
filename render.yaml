@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: rio-downloader
+    runtime: python
+    plan: free
+    # yt-dlp needs a JavaScript runtime for YouTube. The "deno" wheel provides one;
+    # if it can't be installed the build still succeeds (Node.js on the server is used instead).
+    buildCommand: pip install -r requirements.txt && (pip install deno || echo "deno wheel not installed")
+    # 1 worker keeps jobs/tickets in one process; 16 threads so long jobs
+    # can't starve the /healthz check.
+    startCommand: gunicorn app:app --workers 1 --threads 16 --timeout 120 --worker-tmp-dir /dev/shm
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: PROXY_HOPS        # proxies in front of the app (see README > Rate limit)
+        value: "2"

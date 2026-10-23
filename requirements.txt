@@ -1,0 +1,6 @@
+flask>=3.0,<4
+gunicorn>=22.0
+requests>=2.32
+curl_cffi>=0.7
+imageio-ffmpeg>=0.5
+yt-dlp[default]
